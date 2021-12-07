@@ -63,7 +63,7 @@ def show_pokemon(request, pokemon_id):
     pokemon_json = {
         'pokemon_id': pokemon.id,
         'title_ru': pokemon.title,
-        'description': None,
+        'description': pokemon.description,
         'img_url': request.build_absolute_uri(pokemon.image.url) if pokemon.image else None
     }
 
