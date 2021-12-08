@@ -1,6 +1,4 @@
 import folium
-import json
-
 from django.http import HttpResponseNotFound
 from django.shortcuts import render
 from .models import Pokemon, PokemonEntity
@@ -44,7 +42,8 @@ def show_all_pokemons(request):
     for pokemon in pokemons:
         pokemons_on_page.append({
             'pokemon_id': pokemon.id,
-            'img_url': request.build_absolute_uri(pokemon.image.url) if pokemon.image else None,
+            'img_url': (request.build_absolute_uri(pokemon.image.url)
+                        if pokemon.image else None),
             'title_ru': pokemon.title,
         })
 
@@ -66,26 +65,32 @@ def show_pokemon(request, pokemon_id):
         'title_en': pokemon.title_en,
         'title_jp': pokemon.title_jp,
         'description': pokemon.description,
-        'img_url': request.build_absolute_uri(pokemon.image.url) if pokemon.image else None
+        'img_url': (request.build_absolute_uri(pokemon.image.url)
+                    if pokemon.image else None)
     }
 
     previous_evolution = pokemon.previous_evolution
 
     if previous_evolution:
+        image_url = (request.build_absolute_uri(previous_evolution.image.url)
+                     if previous_evolution.image else None)
         pokemon_json['previous_evolution'] = {
             'title_ru': previous_evolution.title,
             'pokemon_id': previous_evolution.id,
-            'img_url': request.build_absolute_uri(previous_evolution.image.url) if previous_evolution.image else None
+            'img_url': image_url
         }
-        
+
     next_evolutions = Pokemon.objects.filter(previous_evolution=pokemon)
-    
+
     if next_evolutions:
         next_evolution = next_evolutions[0]
+        image_url = (request.build_absolute_uri(next_evolution.image.url)
+                     if next_evolution.image else None)
+
         pokemon_json['next_evolution'] = {
             'title_ru': next_evolution.title,
             'pokemon_id': next_evolution.id,
-            'img_url': request.build_absolute_uri(next_evolution.image.url) if next_evolution.image else None
+            'img_url': image_url
         }
 
     folium_map = folium.Map(location=MOSCOW_CENTER, zoom_start=12)
