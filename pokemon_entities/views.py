@@ -59,7 +59,7 @@ def show_pokemon(request, pokemon_id):
     except Pokemon.DoesNotExist:
         return HttpResponseNotFound('<h1>Такой покемон не найден</h1>')
 
-    pokemon_dict = {
+    context_pokemon = {
         'pokemon_id': pokemon.id,
         'title_ru': pokemon.title,
         'title_en': pokemon.title_en,
@@ -74,7 +74,7 @@ def show_pokemon(request, pokemon_id):
     if previous_evolution:
         image_url = (request.build_absolute_uri(previous_evolution.image.url)
                      if previous_evolution.image else None)
-        pokemon_dict['previous_evolution'] = {
+        context_pokemon['previous_evolution'] = {
             'title_ru': previous_evolution.title,
             'pokemon_id': previous_evolution.id,
             'img_url': image_url
@@ -87,7 +87,7 @@ def show_pokemon(request, pokemon_id):
         image_url = (request.build_absolute_uri(next_evolution.image.url)
                      if next_evolution.image else None)
 
-        pokemon_dict['next_evolution'] = {
+        context_pokemon['next_evolution'] = {
             'title_ru': next_evolution.title,
             'pokemon_id': next_evolution.id,
             'img_url': image_url
@@ -102,5 +102,5 @@ def show_pokemon(request, pokemon_id):
         )
 
     return render(request, 'pokemon.html', context={
-        'map': folium_map._repr_html_(), 'pokemon': pokemon_dict
+        'map': folium_map._repr_html_(), 'pokemon': context_pokemon
     })
